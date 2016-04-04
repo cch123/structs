@@ -22,7 +22,7 @@ type Compare func(a interface{}, b interface{}) int
 type Skiplist struct {
 	Header *SkiplistNode
 	Tail   *SkiplistNode
-	//比较函数，由外部传入的函数进行初始化
+	// compare function
 	comp   Compare
 	Length uint64
 	Level  int
@@ -43,7 +43,8 @@ func SkiplistCreate(p Compare) *Skiplist {
 		sl.Header.Level[j].Forward = nil
 		sl.Header.Level[j].Span = 0
 	}
-	//golang里其实不需要nil这种初始化
+	// in face,
+	// in golang there is no need to initialize pointer to nil
 	sl.Header.Backward = nil
 	sl.Tail = nil
 	sl.comp = p
@@ -51,12 +52,9 @@ func SkiplistCreate(p Compare) *Skiplist {
 	return sl
 }
 
-/*
-注意这里没有给rand设置时间为种子，因为这不重要
-运行期多次调用rand的话
-虽然行为是重复的
-但多次调用可以满足“每次”随机的要求
-*/
+// the random number is fake random, cuz there is no time seed
+// so in fact, the level of each insert node can be predicted
+// but it doesn't matter
 func skiplistRandomLevel() int {
 	var level int = 1
 	for i, j := rand.Int()&0xFFFF, 0.25*0xFFFF; i < int(j); i = rand.Int() & 0xFFFF {
@@ -70,14 +68,9 @@ func skiplistRandomLevel() int {
 	return level
 }
 
-//这个函数看起来可能没什么用
-func (sl *Skiplist) SkiplistFree() {
-}
-
-/*
- */
 func (sl *Skiplist) SkiplistInsert(obj interface{}) *SkiplistNode {
-	//update 记录了要插入的这个元素的所有前置节点，从0层到当前层，应该每一层都有一个该节点的前置节点
+
+	// record the nodes which forward pointer need to be updated
 	var update [SKIPLIST_MAXLEVEL]*SkiplistNode
 	var rank [SKIPLIST_MAXLEVEL]uint64
 
@@ -92,26 +85,23 @@ func (sl *Skiplist) SkiplistInsert(obj interface{}) *SkiplistNode {
 			rank[i] = rank[i+1]
 		}
 
-		//跳跃表在插入的时候每一层这个节点的前一结点都需要调整forward指针，所以需要都记录下来
+		// find the node before the insert node
 		for x.Level[i].Forward != nil && sl.comp(x.Level[i].Forward.Obj, obj) < 0 {
 			rank[i] += x.Level[i].Span
 			x = x.Level[i].Forward
 		}
 		update[i] = x
-		//fmt.Printf("%+v", x)
 	}
 
-	//如果跳跃表中节点已经存在，那么不再插入，直接返回空
+	// if the node exists, give up insert，and return nil pointer
 	if x.Level[0].Forward != nil && sl.comp(x.Level[0].Forward.Obj, obj) == 0 {
 		x = nil
 		return x
 	}
 
-	/*
-	 */
-
 	level := skiplistRandomLevel()
-	//如果随机的层比当前整个skiplist的层还要高，那么需要在做一些特殊处理
+	// if the generated level is bigger than the current skiplist level
+	// need some special ops
 	if level > sl.Level {
 		for i := sl.Level; i < level; i++ {
 			rank[i] = 0
@@ -153,7 +143,7 @@ func (sl *Skiplist) SkiplistInsert(obj interface{}) *SkiplistNode {
 	return x
 }
 
-//内部函数，具体实现删除逻辑
+// internal function to implement the insert logic
 func (sl *Skiplist) skiplistDeleteNode(x *SkiplistNode, update [SKIPLIST_MAXLEVEL](*SkiplistNode)) {
 	for i := 0; i < sl.Level; i++ {
 		if update[i].Level[i].Forward == x {
@@ -191,9 +181,8 @@ func (sl *Skiplist) SkiplistDelete(obj interface{}) int {
 	}
 	x = x.Level[0].Forward
 	if x != nil && sl.comp(x.Obj, obj) == 0 {
-		//sl.skiplistDeleteNode(l, x, update)
 		sl.skiplistDeleteNode(x, update)
-		//skiplistfreenode
+		// skiplistfreenode
 		return 1
 	}
 	return 0 // not found
@@ -217,7 +206,7 @@ func (sl *Skiplist) SkiplistFind(obj interface{}) *SkiplistNode {
 
 }
 
-//pop并返回pop的值，interface类型
+// pop, and return the value
 func (sl *Skiplist) SkiplistPopHead() interface{} {
 	var res interface{}
 	var x *SkiplistNode = sl.Header
