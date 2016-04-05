@@ -34,7 +34,7 @@ func TestDelete(t *testing.T) {
 		}
 	}
 
-	x.Print()
+	//x.Print()
 	var lastLength = x.Length
 	var delRes int
 	for _, str := range strArr {
@@ -42,12 +42,13 @@ func TestDelete(t *testing.T) {
 		if delRes != 1 || lastLength != x.Length+1 {
 			t.Errorf("delete str %s error !\n", str)
 		}
+		lastLength = x.Length
+		//x.Print()
 	}
 
 	if x.Length != 0 {
 		t.Errorf("after delete all there cannot be any element left\n")
 	}
-	x.Print()
 }
 
 func TestPopHead(t *testing.T) {

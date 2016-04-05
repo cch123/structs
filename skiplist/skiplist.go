@@ -174,7 +174,7 @@ func (sl *Skiplist) SkiplistDelete(obj interface{}) int {
 
 	for i := sl.Level - 1; i >= 0; i-- {
 		for x.Level[i].Forward != nil &&
-			sl.comp(x.Level[i].Forward.Obj, obj) > 0 {
+			sl.comp(x.Level[i].Forward.Obj, obj) < 0 {
 			x = x.Level[i].Forward
 		}
 		update[i] = x
