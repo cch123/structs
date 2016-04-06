@@ -212,7 +212,7 @@ func (sl *Skiplist) SkiplistPopHead() interface{} {
 	var x *SkiplistNode = sl.Header
 
 	x = x.Level[0].Forward
-	if x != nil {
+	if x == nil {
 		res = nil
 		return res
 	}
@@ -224,7 +224,7 @@ func (sl *Skiplist) SkiplistPopHead() interface{} {
 func (sl *Skiplist) SkiplistPopTail() interface{} {
 	var res interface{}
 	var x *SkiplistNode = sl.Tail
-	if x != nil {
+	if x == nil {
 		res = nil
 		return res
 	}
