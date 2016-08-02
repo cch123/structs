@@ -14,10 +14,10 @@ func compare(a interface{}, b interface{}) int {
 }
 
 func TestInsert(t *testing.T) {
-	var x *Skiplist = SkiplistCreate(compare)
-	var insRes *SkiplistNode
+	var x = CreateList(compare)
+	var insRes *Node
 	for _, str := range strArr {
-		insRes = x.SkiplistInsert(str)
+		insRes = x.Insert(str)
 		if insRes == nil {
 			t.Errorf("insert %s failed\n", str)
 		}
@@ -26,10 +26,10 @@ func TestInsert(t *testing.T) {
 
 //TODO test random delete
 func TestDelete(t *testing.T) {
-	var x *Skiplist = SkiplistCreate(compare)
-	var insRes *SkiplistNode
+	var x = CreateList(compare)
+	var insRes *Node
 	for _, str := range strArr {
-		insRes = x.SkiplistInsert(str)
+		insRes = x.Insert(str)
 		if insRes == nil {
 			t.Errorf("insert %s for test delete failed\n", str)
 		}
@@ -39,7 +39,7 @@ func TestDelete(t *testing.T) {
 	var lastLength = x.Length
 	var delRes int
 	for _, str := range strArr {
-		delRes = x.SkiplistDelete(str)
+		delRes = x.Delete(str)
 		if delRes != 1 || lastLength != x.Length+1 {
 			t.Errorf("delete str %s error !\n", str)
 		}
@@ -53,10 +53,10 @@ func TestDelete(t *testing.T) {
 }
 
 func TestPopHead(t *testing.T) {
-	var x *Skiplist = SkiplistCreate(compare)
-	var insRes *SkiplistNode
+	var x = CreateList(compare)
+	var insRes *Node
 	for _, str := range strArr {
-		insRes = x.SkiplistInsert(str)
+		insRes = x.Insert(str)
 		if insRes == nil {
 			t.Errorf("insert %s for test pop head failed\n", str)
 		}
@@ -73,7 +73,7 @@ func TestPopHead(t *testing.T) {
 	}
 
 	for _, str := range skiplistStrs {
-		var obj interface{} = x.SkiplistPopHead()
+		var obj interface{} = x.PopHead()
 		if obj != nil && obj.(string) != str {
 			t.Errorf("pop head error! the pop result is %v, expected is %s\n", obj, str)
 		}
@@ -85,10 +85,10 @@ func TestPopHead(t *testing.T) {
 }
 
 func TestPopTail(t *testing.T) {
-	var x *Skiplist = SkiplistCreate(compare)
-	var insRes *SkiplistNode
+	var x = CreateList(compare)
+	var insRes *Node
 	for _, str := range strArr {
-		insRes = x.SkiplistInsert(str)
+		insRes = x.Insert(str)
 		if insRes == nil {
 			t.Errorf("insert %s for test pop head failed\n", str)
 		}
@@ -107,7 +107,7 @@ func TestPopTail(t *testing.T) {
 	//for _, str := range skiplistStrs {
 	for i := len(skiplistStrs) - 1; i >= 0; i-- {
 		var str = skiplistStrs[i]
-		var obj interface{} = x.SkiplistPopTail()
+		var obj interface{} = x.PopTail()
 		if obj != nil && obj.(string) != str {
 			t.Errorf("pop tail error! the pop result is %v, expected is %s\n", obj, str)
 		}
@@ -120,17 +120,17 @@ func TestPopTail(t *testing.T) {
 }
 
 func TestDuplicateNode(t *testing.T) {
-	var x *Skiplist = SkiplistCreate(compare)
-	var insRes *SkiplistNode
+	var x = CreateList(compare)
+	var insRes *Node
 	for _, str := range strArr {
-		insRes = x.SkiplistInsert(str)
+		insRes = x.Insert(str)
 		if insRes == nil {
 			t.Errorf("insert %s for test pop head failed\n", str)
 		}
 	}
 
 	for _, str := range strArr {
-		insRes = x.SkiplistInsert(str)
+		insRes = x.Insert(str)
 		if insRes != nil {
 			t.Errorf("node %s already exist, insert success is not valid\n", str)
 		}
