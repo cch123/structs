@@ -62,7 +62,7 @@ func CreateList(p Compare) *Skiplist {
 // but it doesn't matter
 func skiplistRandomLevel() int {
 	var level = 1
-	for i, j := rand.Int()&0xFFFF, 0.25*0xFFFF; i < int(j); i = rand.Int() & 0xFFFF {
+	for i, j := rand.Int()&0xFFFF, skiplistTP*0xFFFF; i < int(j); i = rand.Int() & 0xFFFF {
 		level++
 	}
 
