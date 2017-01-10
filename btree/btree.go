@@ -1,5 +1,7 @@
 package btree
 
+import "fmt"
+
 const (
 	// MIDORDER tranversal mid order
 	MIDORDER = iota
@@ -22,10 +24,9 @@ type BTree struct {
 }
 
 // New makes a new binary tree
-func New() {
-	root := new(Node)
+func New() *BTree {
 	return &BTree{
-		Root: root,
+		Root: nil,
 	}
 }
 
@@ -50,9 +51,16 @@ func (tree *BTree) findInsertPoint(data int) (node *Node) {
 
 // Insert will insert a node to binary tree
 func (tree *BTree) Insert(data int) bool {
-	insertPoint := tree.findInsertPoint(data)
 	newNode := new(Node)
 	newNode.Data = data
+
+	if tree.Root == nil {
+		tree.Root = newNode
+		return true
+	}
+
+	// the root is not nil
+	insertPoint := tree.findInsertPoint(data)
 	if data < insertPoint.Data {
 		insertPoint.Left = newNode
 		return true
@@ -70,36 +78,92 @@ func (tree *BTree) Insert(data int) bool {
 func (tree *BTree) Delete(data int) bool {
 	var cur = tree.Root
 	var parent = tree.Root
-	for cur.Left != nil || cur.Right != nil {
-		if cur.Left != nil && data < cur.Data {
+	var flag = true // true left, false right
+
+	for cur != nil && cur.Data != data {
+		if data < cur.Data {
 			parent = cur
 			cur = cur.Left
+			flag = true
 			continue
 		}
 
-		if cur.Right != nil && data > cur.Data {
+		if data > cur.Data {
 			parent = cur
 			cur = cur.Right
+			flag = false
 			continue
 		}
-		break
 	}
 
-	if cur.Data == data {
-		if parent != cur {
-			if parent.Left.Data == data {
-				parent.Left = nil
-			} else {
-				parent.Right = nil
+	if cur != nil && cur.Data == data {
+		// means this is the root
+		if cur == parent {
+			if parent.Left != nil {
+				parent.Left.Right = tree.Root.Right
+				tree.Root = parent.Left
+			} else if parent.Right != nil {
+				parent.Right.Left = tree.Root.Left
+				tree.Root = parent.Right
 			}
+			return true
 		}
+
+		// not the root
+		if flag == true {
+			// delete left
+			parent.Left = parent.Left.Left
+			return true
+		}
+
+		// delete right
+		parent.Right = parent.Right.Right
 		return true
 	}
-
 	return false
 }
 
-// TranversalPrint will tranvesal the tree and print the node data
+// TraversalPrint will tranvesal the tree and print the node data
 // the order is defined as MIDORDER/PREORDER/POSTORDER
-func (tree *BTree) TranversalPrint(tranversalType int) {
+func (node *Node) TraversalPrint(traversalType int) {
+	switch traversalType {
+	case MIDORDER:
+		//print left
+		if node.Left != nil {
+			node.Left.TraversalPrint(traversalType)
+		}
+
+		//print current
+		fmt.Println(node.Data)
+
+		//print right
+		if node.Right != nil {
+			node.Right.TraversalPrint(traversalType)
+		}
+	case PREORDER:
+		//print current
+		fmt.Println(node.Data)
+		//print left
+		if node.Left != nil {
+			node.Left.TraversalPrint(traversalType)
+		}
+
+		//print right
+		if node.Right != nil {
+			node.Right.TraversalPrint(traversalType)
+		}
+	case POSTORDER:
+		//print left
+		if node.Left != nil {
+			node.Left.TraversalPrint(traversalType)
+		}
+
+		//print right
+		if node.Right != nil {
+			node.Right.TraversalPrint(traversalType)
+		}
+
+		//print current
+		fmt.Println(node.Data)
+	}
 }
