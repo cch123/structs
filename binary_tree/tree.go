@@ -1,4 +1,4 @@
-package btree
+package tree
 
 import "fmt"
 
@@ -11,26 +11,26 @@ const (
 	POSTORDER
 )
 
-// Node is a node of a btree
+// Node is a node of a tree
 type Node struct {
 	Left  *Node
 	Right *Node
 	Data  int
 }
 
-// BTree is binary tree
-type BTree struct {
+// Tree is binary tree
+type Tree struct {
 	Root *Node
 }
 
 // New makes a new binary tree
-func New() *BTree {
-	return &BTree{
+func New() *Tree {
+	return &Tree{
 		Root: nil,
 	}
 }
 
-func (tree *BTree) findInsertPoint(data int) (node *Node) {
+func (tree *Tree) findInsertPoint(data int) (node *Node) {
 	var cur = tree.Root
 	for cur.Left != nil || cur.Right != nil {
 		if cur.Left != nil && data < cur.Data {
@@ -50,7 +50,7 @@ func (tree *BTree) findInsertPoint(data int) (node *Node) {
 }
 
 // Insert will insert a node to binary tree
-func (tree *BTree) Insert(data int) bool {
+func (tree *Tree) Insert(data int) bool {
 	newNode := new(Node)
 	newNode.Data = data
 
@@ -75,7 +75,7 @@ func (tree *BTree) Insert(data int) bool {
 }
 
 // Delete will delete the node, the value of witch is data
-func (tree *BTree) Delete(data int) bool {
+func (tree *Tree) Delete(data int) bool {
 	var cur = tree.Root
 	var parent = tree.Root
 	var flag = true // true left, false right
